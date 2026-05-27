@@ -1,4 +1,4 @@
-package com.example.binqr_app
+package com.jayowiee.binqr
 
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
