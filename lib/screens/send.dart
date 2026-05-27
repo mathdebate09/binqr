@@ -20,11 +20,10 @@ class _SendScreenState extends State<SendScreen> {
   BinQRMetadata? _metadata;
 
   bool _sending = false;
-  final ValueNotifier<int> _currentIndex = ValueNotifier<int>(
-    0,
-  );
+  final ValueNotifier<int> _currentIndex = ValueNotifier<int>(0);
   Timer? _timer;
   Timer? _holdTimer;
+  int _sequenceToken = 0;
 
   final TextEditingController _chunkInputCtrl = TextEditingController();
 
@@ -75,6 +74,7 @@ class _SendScreenState extends State<SendScreen> {
     if (_qrStrings == null) return;
     final total = _metadata?.totalChunks ?? 0;
     if (total == 0) return;
+    _sequenceToken++;
     final safeIndex = chunkIndex.clamp(0, total - 1);
     _timer?.cancel();
     _holdTimer?.cancel();
@@ -86,6 +86,34 @@ class _SendScreenState extends State<SendScreen> {
       if (!mounted || !_sending) return;
       _startLoop();
     });
+  }
+
+  Future<void> _showChunkSequence(List<int> chunkIndices) async {
+    if (_qrStrings == null) return;
+    final total = _metadata?.totalChunks ?? 0;
+    if (total == 0 || chunkIndices.isEmpty) return;
+    final safeIndices = chunkIndices
+        .map((index) => index.clamp(0, total - 1))
+        .toList();
+    _timer?.cancel();
+    _holdTimer?.cancel();
+    final token = ++_sequenceToken;
+    for (final index in safeIndices) {
+      if (!mounted || token != _sequenceToken) return;
+      setState(() {
+        _sending = true;
+        _currentIndex.value = index + 1;
+      });
+      await Future.delayed(const Duration(seconds: 2));
+    }
+    if (!mounted || token != _sequenceToken) return;
+    final lastIndex = safeIndices.last;
+    final nextIndex = lastIndex + 1 >= total ? 0 : lastIndex + 1;
+    setState(() {
+      _sending = true;
+      _currentIndex.value = nextIndex + 1;
+    });
+    _startLoop();
   }
 
   void _tick(Timer t) {
@@ -104,6 +132,7 @@ class _SendScreenState extends State<SendScreen> {
   void _stopSending() async {
     _timer?.cancel();
     _holdTimer?.cancel();
+    _sequenceToken++;
     // await BrightnessUtil.restore();
     setState(() {
       _sending = false;
@@ -112,14 +141,40 @@ class _SendScreenState extends State<SendScreen> {
     _showSendAgainDialog();
   }
 
-  int? _parseChunkInput(String value) {
-    final raw = int.tryParse(value.trim());
-    if (raw == null) return null;
+  List<int>? _parseChunkSequence(String value) {
     final total = _metadata?.totalChunks ?? 0;
     if (total == 0) return null;
-    final index = raw - 1;
-    if (index < 0 || index >= total) return null;
-    return index;
+    final parts = value.split(',');
+    if (parts.isEmpty) return null;
+    final indices = <int>[];
+
+    for (final rawPart in parts) {
+      final part = rawPart.trim();
+      if (part.isEmpty) return null;
+      if (part.contains('-')) {
+        final rangeParts = part.split('-');
+        if (rangeParts.length != 2) return null;
+        final start = int.tryParse(rangeParts[0].trim());
+        final end = int.tryParse(rangeParts[1].trim());
+        if (start == null || end == null) return null;
+        if (start < 1 || end < 1 || start > total || end > total) return null;
+        if (start <= end) {
+          for (var i = start; i <= end; i++) {
+            indices.add(i - 1);
+          }
+        } else {
+          for (var i = start; i >= end; i--) {
+            indices.add(i - 1);
+          }
+        }
+      } else {
+        final number = int.tryParse(part);
+        if (number == null || number < 1 || number > total) return null;
+        indices.add(number - 1);
+      }
+    }
+
+    return indices.isEmpty ? null : indices;
   }
 
   Future<void> _showSelectChunkSheet() async {
@@ -165,7 +220,7 @@ class _SendScreenState extends State<SendScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter a chunk number (1 - $total).',
+                'Enter chunks (1 - $total). Example: 2, 5-7, 10',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 12),
@@ -174,9 +229,9 @@ class _SendScreenState extends State<SendScreen> {
                   Expanded(
                     child: TextField(
                       controller: _chunkInputCtrl,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                        hintText: 'Chunk #',
+                        hintText: 'e.g. 3 or 1,4-6,9',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -186,10 +241,14 @@ class _SendScreenState extends State<SendScreen> {
                     label: 'Show',
                     icon: Icons.play_arrow_rounded,
                     onPressed: () {
-                      final index = _parseChunkInput(_chunkInputCtrl.text);
-                      if (index == null) return;
+                      final indices = _parseChunkSequence(_chunkInputCtrl.text);
+                      if (indices == null) return;
                       Navigator.pop(context, true);
-                      _showChunkOnce(index);
+                      if (indices.length == 1) {
+                        _showChunkOnce(indices.first);
+                      } else {
+                        _showChunkSequence(indices);
+                      }
                     },
                   ),
                 ],
