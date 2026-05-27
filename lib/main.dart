@@ -30,7 +30,7 @@ class _BinQRAppState extends State<BinQRApp> {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: _themeModeNotifier,
       builder: (_, mode, __) => MaterialApp(
-        title: 'BinQR',
+        title: 'binqr',
         debugShowCheckedModeBanner: false,
         themeMode: mode,
         theme: AppTheme.light(),

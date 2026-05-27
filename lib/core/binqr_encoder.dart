@@ -105,7 +105,7 @@ class BinQREncoder {
     final total = (bytes.length / kChunkSize).ceil();
 
     final metadata = BinQRMetadata(
-      appName: 'BinQR',
+      appName: 'binqr',
       fileName: fileName,
       fileExtension: ext,
       fileSize: bytes.length,
