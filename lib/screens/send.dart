@@ -54,7 +54,7 @@ class _SendScreenState extends State<SendScreen> {
   void _startSending() async {
     if (_qrStrings == null) return;
     if (_metadata?.totalChunks == 0) return;
-    await BrightnessUtil.setMax();
+    // await BrightnessUtil.setMax();
     _holdTimer?.cancel();
     setState(() {
       _sending = true;
@@ -104,7 +104,7 @@ class _SendScreenState extends State<SendScreen> {
   void _stopSending() async {
     _timer?.cancel();
     _holdTimer?.cancel();
-    await BrightnessUtil.restore();
+    // await BrightnessUtil.restore();
     setState(() {
       _sending = false;
       _currentIndex.value = 0;
@@ -272,7 +272,7 @@ class _SendScreenState extends State<SendScreen> {
     _holdTimer?.cancel();
     _chunkInputCtrl.dispose();
     _currentIndex.dispose();
-    BrightnessUtil.restore();
+    // BrightnessUtil.restore();
     super.dispose();
   }
 
