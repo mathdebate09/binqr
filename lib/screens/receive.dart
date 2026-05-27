@@ -208,7 +208,6 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     final decoder = _decoder!;
     final progress = decoder.progress;
     final missing = decoder.missingIndices;
-    final showMissing = progress >= 0.8 && missing.isNotEmpty;
     final size = MediaQuery.of(context).size;
     final window = _scanWindow(size);
 
@@ -322,35 +321,23 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    Row(
-                      children: [
-                        const _PulsingDot(),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Keep camera aligned',
-                          style: TextStyle(color: Colors.white60, fontSize: 13),
-                        ),
-                      ],
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Pending chunks',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    if (showMissing) ...[
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Missing chunks',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: missing
-                            .map((index) => _MissingBox(label: '${index + 1}'))
-                            .toList(),
-                      ),
-                    ],
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: missing
+                          .map((index) => _MissingBox(label: '${index + 1}'))
+                          .toList(),
+                    ),
                   ],
                 ),
               ),
@@ -587,55 +574,6 @@ class _ScanWindowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ScanWindowPainter old) => old.scanWindow != scanWindow;
-}
-
-// ── PULSING DOT ───────────────────────────────────────────────────────────────
-
-class _PulsingDot extends StatefulWidget {
-  const _PulsingDot();
-
-  @override
-  State<_PulsingDot> createState() => _PulsingDotState();
-}
-
-class _PulsingDotState extends State<_PulsingDot>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _anim;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    _anim = Tween(
-      begin: 0.4,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _anim,
-      child: Container(
-        width: 8,
-        height: 8,
-        decoration: const BoxDecoration(
-          color: Color(0xFF34C759),
-          shape: BoxShape.circle,
-        ),
-      ),
-    );
-  }
 }
 
 class _MissingBox extends StatelessWidget {
