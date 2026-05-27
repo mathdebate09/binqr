@@ -331,12 +331,57 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: missing
-                          .map((index) => _MissingBox(label: '${index + 1}'))
-                          .toList(),
+                    Stack(
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: missing
+                                .map(
+                                  (index) => Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: _MissingBox(label: '${index + 1}'),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                        IgnorePointer(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 18,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      const Color(0xD4000000),
+                                      const Color(0xD4000000).withOpacity(0),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                width: 18,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerRight,
+                                    end: Alignment.centerLeft,
+                                    colors: [
+                                      const Color(0xD4000000),
+                                      const Color(0xD4000000).withOpacity(0),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
