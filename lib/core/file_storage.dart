@@ -20,6 +20,23 @@ class FileStorage {
     return file.path;
   }
 
+  static Future<Directory> binqrDir() async {
+    return _binqrDir();
+  }
+
+  static Future<List<File>> listSavedFiles() async {
+    final dir = await _binqrDir();
+    final entries = await dir
+        .list()
+        .where((entity) => entity is File)
+        .cast<File>()
+        .toList();
+    entries.sort(
+      (a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()),
+    );
+    return entries;
+  }
+
   static Future<Directory> _binqrDir() async {
     Directory base;
     if (Platform.isAndroid) {

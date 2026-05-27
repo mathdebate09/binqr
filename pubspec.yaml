@@ -65,6 +65,9 @@ dependencies:
   # GitHub link launcher
   url_launcher: ^6.3.1
 
+  # Share files
+  share_plus: ^10.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
