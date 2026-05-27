@@ -209,8 +209,6 @@ export function SendPage() {
     if (sending) startLoop();
   };
 
-  const isShowingMeta = currentIndex === 0;
-
   return (
     <div className={`min-h-screen text-foreground ${sending ? 'bg-black' : 'bg-background'}`}>
       <input
@@ -257,10 +255,10 @@ export function SendPage() {
                   <img
                     src={qrDataUrl}
                     alt="QR code"
-                    className="w-[58vw] max-w-[340px] h-auto"
+                    className="w-[58vw] max-w-85 h-auto"
                   />
                 ) : (
-                  <div className="w-[58vw] max-w-[340px] aspect-square" />
+                  <div className="w-[58vw] max-w-85 aspect-square" />
                 )}
               </div>
               <p className="mt-3 text-sm text-white/60 text-center">
