@@ -244,6 +244,57 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showDesktopGuideSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardTheme.color,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Send from Desktop or iOS',
+              style: Theme.of(context).textTheme.displayMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Open the website, select your file, and scan the QR codes with this app to receive it securely.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 20),
+            BinQRButton(
+              label: 'binqr.jayowiee.com/send',
+              icon: Icons.open_in_new_rounded,
+              width: double.infinity,
+              onPressed: () => launchUrl(
+                Uri.parse('https://binqr.jayowiee.com/send'),
+                mode: LaunchMode.externalApplication,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -391,6 +442,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (_) => const ReceiveScreen(),
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    BinQRButton(
+                      label: 'Send from Desktop',
+                      icon: Icons.open_in_new_rounded,
+                      outlined: true,
+                      width: double.infinity,
+                      onPressed: () => _showDesktopGuideSheet(context),
                     ),
                   ],
                 ),
