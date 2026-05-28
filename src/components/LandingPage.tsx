@@ -69,11 +69,11 @@ export function LandingPage() {
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-3">
                 <a
-                  href="https://f-droid.org"
+                  href="https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-arm64-v8a.apk"
                   className="inline-flex items-center gap-2 px-6 h-12 bg-white text-black rounded-full font-semibold hover:bg-white/90 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" strokeWidth={2} />
-                  Get it on F-Droid
+                  Download APK
                 </a>
                 <Link
                   to="/send"
@@ -201,11 +201,11 @@ export function LandingPage() {
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <a
-                  href="https://f-droid.org"
+                  href="https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-arm64-v8a.apk"
                   className="inline-flex items-center gap-2 px-6 h-12 bg-white text-black rounded-full font-semibold hover:bg-white/90 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" strokeWidth={2} />
-                  Download on F-Droid
+                  Download APK
                 </a>
               </div>
             </div>
@@ -215,8 +215,8 @@ export function LandingPage() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-secondary">
             <p>© 2026 mathdebate09/binqr · MIT License</p>
             <div className="flex items-center gap-4">
-              <a href="https://f-droid.org" className="hover:text-white transition-colors">
-                F-Droid
+              <a href="https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-arm64-v8a.apk" className="hover:text-white transition-colors">
+                APK
               </a>
               <span>·</span>
               <a href="https://github.com/mathdebate09/binqr" className="hover:text-white transition-colors">
