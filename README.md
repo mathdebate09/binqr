@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
- Connection-free file transfer for android and desktop using QR devices as a medium, written in flutter & nextjs
+ Connection-free file transfer for android and desktop using QR devices as a medium, written in flutter & vite
 </p>
 
 ## How It Works
