@@ -1,10 +1,24 @@
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import java.util.Properties
 
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+val hasLocalKeystore = keystorePropertiesFile.exists()
+
+if (hasLocalKeystore) {
+    keystorePropertiesFile.inputStream().use { stream ->
+        keystoreProperties.load(stream)
+    }
+}
+
+val isCi = System.getenv("CI") == "true"
+val useReleaseSigning = isCi || hasLocalKeystore
 
 android {
     namespace = "com.jayowiee.binqr"
@@ -28,27 +42,38 @@ android {
     }
 
     signingConfigs {
-        if (System.getenv("CI") == "true") {
+        if (isCi) {
             create("release") {
                 keyAlias = System.getenv("KEY_ALIAS")
                 keyPassword = System.getenv("KEY_PASSWORD")
                 storeFile = System.getenv("KEYSTORE_PATH")?.let { file(it) }
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
             }
+        } else if (hasLocalKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = if (System.getenv("CI") == "true") {
+            signingConfig = if (useReleaseSigning) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
             }
 
-            // Enable code shrinking to reduce APK size
-            isMinifyEnabled = true
-            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
+            isMinifyEnabled = useReleaseSigning
+            isShrinkResources = useReleaseSigning
         }
     }
 
