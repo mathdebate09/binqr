@@ -3,6 +3,7 @@ import { Upload, QrCode, ScanLine, Github, Computer, ExternalLink, Play, Tag } f
 import logoText from '../assets/logo-text.png';
 import { PhoneMockup } from './PhoneMockup';
 import { Link } from 'react-router';
+import { releases } from '../lib/releases';
 
 export function LandingPage() {
   const [isDownloadOpen, setIsDownloadOpen] = useState(false);
@@ -11,41 +12,8 @@ export function LandingPage() {
 
   const YOUTUBE_ID = 'APfcLUemndo';
 
-  const downloadOptions = [
-    {
-      id: 'arm64-v8a',
-      label: 'binqr-v1.0.0-arm64-v8a.apk',
-      href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-arm64-v8a.apk',
-      sha1Href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-arm64-v8a.apk.sha1',
-      sha256: 'df697822ba3fae768d4347ba8a06f01cc106701a0344d3cf6df77cdfaa05524b',
-      size: '24.6 MB',
-      updated: '10 minutes ago',
-      reason: 'Modern Android phone/tablet (2015 or newer)',
-      recommended: true,
-    },
-    {
-      id: 'armeabi-v7a',
-      label: 'binqr-v1.0.0-armeabi-v7a.apk',
-      href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-armeabi-v7a.apk',
-      sha1Href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-armeabi-v7a.apk.sha1',
-      sha256: '9114cb52f286bb9eec9c8bf7d245c93a69af625a61500ec97389da78e134834b',
-      size: '20.6 MB',
-      updated: '9 minutes ago',
-      reason: 'Older Android phone/tablet (pre-2015)',
-      recommended: false,
-    },
-    {
-      id: 'x86_64',
-      label: 'binqr-v1.0.0-x86_64.apk',
-      href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-x86_64.apk',
-      sha1Href: 'https://github.com/mathdebate09/binqr/releases/download/v1.0.0/binqr-v1.0.0-x86_64.apk.sha1',
-      sha256: 'd45090eb47e369203460753e2506f54d312d8b9be60448e8e0f31b6363d51ad3',
-      size: '27 MB',
-      updated: '9 minutes ago',
-      reason: 'Android Emulator (AVD)',
-      recommended: false,
-    },
-  ];
+  const latestRelease = releases[releases.length - 1];
+  const downloadOptions = latestRelease?.assets ?? [];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -333,7 +301,7 @@ export function LandingPage() {
       {/* Download Modal */}
       {isDownloadOpen ? (
         <div
-          className="fixed inset-0 z-[60] flex items-center justify-center px-6 py-10"
+          className="fixed inset-0 z-60 flex items-center justify-center px-6 py-10"
           role="dialog"
           aria-modal="true"
           aria-label="Download options"
@@ -360,20 +328,20 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={() => setIsDownloadOpen(false)}
-                className="w-8 h-8 rounded-full border border-white/[0.12] text-white/50 hover:text-white hover:border-white/25 transition-colors flex items-center justify-center text-sm flex-shrink-0"
+                className="w-8 h-8 rounded-full border border-white/12 text-white/50 hover:text-white hover:border-white/25 transition-colors flex items-center justify-center text-sm shrink-0"
               >
                 ✕
               </button>
             </div>
 
             {/* Tab toggle */}
-            <div className="flex gap-1 bg-white/5 rounded-full p-[3px] w-fit mb-5">
+            <div className="flex gap-1 bg-white/5 rounded-full p-0.75 w-fit mb-5">
               {(['apk', 'checksum'] as const).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setDownloadTab(tab)}
-                  className={`px-[18px] py-1.5 rounded-full text-xs font-medium transition-all ${downloadTab === tab
+                  className={`px-4.5 py-1.5 rounded-full text-xs font-medium transition-all ${downloadTab === tab
                     ? 'bg-white text-black'
                     : 'text-white/45 hover:text-white/70'
                     }`}
@@ -389,8 +357,8 @@ export function LandingPage() {
                 <div
                   key={option.id}
                   className={`flex items-center justify-between gap-3 rounded-[14px] px-4 py-3.5 border ${option.recommended
-                    ? 'bg-white/[0.04] border-white/20'
-                    : 'bg-white/[0.03] border-white/[0.08]'
+                    ? 'bg-white/4 border-white/20'
+                    : 'bg-white/3 border-white/8'
                     }`}
                 >
                   <div className="min-w-0">
@@ -406,7 +374,7 @@ export function LandingPage() {
                     {downloadTab === 'apk' ? (
                       <p className="text-white/30 text-xs mt-1">{option.size}</p>
                     ) : (
-                      <p className="text-white/30 text-[11px] font-mono mt-1 truncate max-w-[220px]">
+                      <p className="text-white/30 text-[11px] font-mono mt-1 truncate max-w-55">
                         {option.sha256.slice(0, 20)}…
                       </p>
                     )}
@@ -415,7 +383,7 @@ export function LandingPage() {
                   {downloadTab === 'apk' ? (
                     <a
                       href={option.href}
-                      className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.08] border border-white/[0.12] rounded-full text-white text-xs font-medium hover:bg-white/[0.15] transition-colors"
+                      className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/8 border border-white/12 rounded-full text-white text-xs font-medium hover:bg-white/15 transition-colors"
                     >
                       <ExternalLink className="w-3.5 h-3.5" strokeWidth={2} />
                       Download
@@ -423,7 +391,7 @@ export function LandingPage() {
                   ) : (
                     <a
                       href={option.sha1Href}
-                      className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/[0.08] border border-white/[0.12] rounded-full text-white text-xs font-medium hover:bg-white/[0.15] transition-colors"
+                      className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 bg-white/8 border border-white/12 rounded-full text-white text-xs font-medium hover:bg-white/15 transition-colors"
                     >
                       <ExternalLink className="w-3.5 h-3.5" strokeWidth={2} />
                       .sha1
